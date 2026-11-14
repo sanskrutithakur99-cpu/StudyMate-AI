@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat | StudyMate AI</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f6ff;
+            color: #202044;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: white;
+            padding: 18px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 15px #0000000a;
+        }
+
+        .logo {
+            font-size: 23px;
+            font-weight: bold;
+            color: #5145cd;
+        }
+
+        header a {
+            text-decoration: none;
+            color: #5145cd;
+            font-weight: bold;
+        }
+
+        .chat-container {
+            width: 90%;
+            max-width: 850px;
+            margin: 35px auto;
+            background: white;
+            border-radius: 18px;
+            box-shadow: 0 8px 35px #25205c12;
+            display: flex;
+            flex-direction: column;
+            height: 75vh;
+            min-height: 500px;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            background: #eeeaff;
+            color: #5145cd;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 22px;
+        }
+
+        .chat-header p {
+            color: #888;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .chat-header button {
+            margin-left: auto;
+            background: #f2f0ff;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+            color: #5145cd;
+            cursor: pointer;
+        }
+
+        .messages {
+            flex: 1;
+            padding: 22px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 14px 16px;
+            border-radius: 14px;
+            line-height: 1.6;
+            font-size: 15px;
+            overflow-wrap: anywhere;
+        }
+
+        .ai {
+            background: #f1f0ff;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .user {
+            background: #5145cd;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .chat-form {
+            padding: 18px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-form input {
+            flex: 1;
+            min-width: 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .chat-form input:focus {
+            border-color: #5145cd;
+        }
+
+        .chat-form button {
+            background: #5145cd;
+            color: white;
+            border: none;
+            padding: 0 22px;
+            border-radius: 10px;
+            font-size: 17px;
+            cursor: pointer;
+        }
+
+        .note {
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+            padding: 0 10px 14px;
+        }
+
+        @media (max-width: 600px) {
+            .chat-container {
+                width: 95%;
+                margin: 18px auto;
+                height: 78vh;
+            }
+
+            header {
+                padding: 15px 5%;
+            }
+
+            .message {
+                max-width: 92%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">✦ StudyMate AI</div>
+        <a href="dashboard.html">← Dashboard</a>
+    </header>
+
+    <main class="chat-container">
+
+        <div class="chat-header">
+            <div class="avatar">🤖</div>
+
+            <div>
+                <h3>AI Study Assistant</h3>
+                <p>● Ready to help you learn</p>
+            </div>
+
+            <button onclick="clearChat()">Clear Chat</button>
+        </div>
+
+        <div class="messages" id="messages">
+            <div class="message ai">
+                👋 Hi! I'm your StudyMate AI assistant.
+                Ask me a study question to get started!
+            </div>
+        </div>
+
+        <form class="chat-form" id="chatForm">
+            <input
+                type="text"
+                id="userInput"
+                placeholder="Ask me anything..."
+                autocomplete="off"
+                required
+            >
+
+            <button type="submit">➤</button>
+        </form>
+
+        <div class="note">
+            Demo mode: AI responses are sample replies.
+        </div>
+
+    </main>
+
+    <script>
+const API_URL = "http://127.0.0.1:5000";
+
+const form = document.getElementById("chatForm");
+const input = document.getElementById("userInput");
+const messages = document.getElementById("messages");
+
+form.addEventListener("submit", async function(event) {
+    event.preventDefault();
+
+    const question = input.value.trim();
+    if (!question) return;
+
+    addMessage(question, "user");
+    input.value = "";
+
+    const loading = document.createElement("div");
+    loading.className = "message ai";
+    loading.textContent = "✨ StudyMate AI is thinking...";
+    messages.appendChild(loading);
+    messages.scrollTop = messages.scrollHeight;
+
+    try {
+        const response = await fetch(API_URL + "/api/ai/chat", {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ message: question })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || "AI response failed");
+        }
+
+        console.log("AI Response:", result);
+        loading.textContent = result.reply;
+
+    } catch (error) {
+        loading.textContent = "Sorry! " + error.message;
+    }
+
+    messages.scrollTop = messages.scrollHeight;
+});
+
+function addMessage(text, type) {
+    const message = document.createElement("div");
+    message.className = "message " + type;
+    message.textContent = text;
+    messages.appendChild(message);
+    messages.scrollTop = messages.scrollHeight;
+}
+
+function clearChat() {
+    messages.innerHTML = "";
+    addMessage("👋 Chat cleared! What would you like to study?", "ai");
+}
+</script>
+
+</body>
+</html>

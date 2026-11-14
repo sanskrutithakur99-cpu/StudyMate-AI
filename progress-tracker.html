@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Progress Tracker | StudyMate AI</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f4f5fb;
+    color: #252545;
+    padding: 30px 15px;
+}
+
+.container {
+    max-width: 850px;
+    margin: auto;
+}
+
+h1 {
+    text-align: center;
+    color: #5146c8;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #777;
+    margin-bottom: 30px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px #00000010;
+    margin-bottom: 20px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.stat-box {
+    background: #f6f5ff;
+    padding: 20px 10px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.stat-box h2 {
+    color: #6256d9;
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+.stat-box p {
+    color: #777;
+    font-size: 14px;
+}
+
+.progress-track {
+    background: #e6e5f5;
+    height: 16px;
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 18px 0;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: #6256d9;
+    border-radius: 20px;
+    transition: width 0.4s ease;
+}
+
+.percentage {
+    color: #6256d9;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.note {
+    color: #888;
+    font-size: 13px;
+    margin-top: 15px;
+    line-height: 1.5;
+}
+
+@media (max-width: 550px) {
+    .stats {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>📊 Progress Tracker</h1>
+    <p class="subtitle">Track your learning journey and celebrate your progress!</p>
+
+    <div class="card">
+        <h2>Your Study Overview</h2>
+        <br>
+
+        <div class="stats">
+            <div class="stat-box">
+                <h2 id="totalTasks">0</h2>
+                <p>Total Tasks</p>
+            </div>
+
+            <div class="stat-box">
+                <h2 id="completedTasks">0</h2>
+                <p>Completed</p>
+            </div>
+
+            <div class="stat-box">
+                <h2 id="pendingTasks">0</h2>
+                <p>Pending</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Overall Progress</h2>
+        <br>
+
+        <div class="percentage" id="percentage">0%</div>
+
+        <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <p id="message">Start adding and completing study tasks!</p>
+
+        <p class="note">
+            This is a frontend demonstration. Progress is calculated
+            from tasks added on this page and resets when the page refreshes.
+        </p>
+    </div>
+
+</div>
+
+<script>
+function updateProgress() {
+    const tasks = JSON.parse(localStorage.getItem("studyTasks")) || [];
+
+const total = tasks.length;
+const completed = tasks.filter(task => task.completed).length;
+const pending = total - completed;
+
+
+    const progress = Math.round((completed / total) * 100);
+
+    document.getElementById("totalTasks").textContent = total;
+    document.getElementById("completedTasks").textContent = completed;
+    document.getElementById("pendingTasks").textContent = pending;
+
+    document.getElementById("percentage").textContent = progress + "%";
+    document.getElementById("progressFill").style.width = progress + "%";
+
+    document.getElementById("message").textContent =
+        progress === 100
+        ? "Amazing! All tasks completed!"
+        : "Great progress! Keep learning and stay consistent.";
+}
+
+updateProgress();
+</script>
+
+</body>
+</html>

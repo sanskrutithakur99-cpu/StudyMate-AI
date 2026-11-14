@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Notes | StudyMate AI</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f6fc;
+            color: #20213a;
+        }
+
+        header {
+            background: white;
+            padding: 20px 7%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 12px #00000008;
+        }
+
+        .logo {
+            color: #5145cd;
+            font-size: 23px;
+            font-weight: bold;
+        }
+
+        header a {
+            color: #5145cd;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        main {
+            max-width: 950px;
+            margin: 45px auto;
+            padding: 0 20px;
+        }
+
+        .heading {
+            margin-bottom: 28px;
+        }
+
+        .heading h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .heading p {
+            color: #777;
+            line-height: 1.6;
+        }
+
+        .notes-card {
+            background: white;
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 8px 30px #29245a0b;
+            margin-bottom: 25px;
+        }
+
+        .notes-card h2 {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .notes-card p {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 18px;
+            line-height: 1.6;
+        }
+
+        .upload-box {
+            border: 2px dashed #b9b2f5;
+            background: #faf9ff;
+            border-radius: 13px;
+            padding: 28px 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .upload-box .icon {
+            font-size: 35px;
+            margin-bottom: 10px;
+        }
+
+        input[type="file"] {
+            max-width: 100%;
+            margin-top: 15px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 180px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            resize: vertical;
+            font-size: 15px;
+            outline-color: #7467e8;
+            margin-bottom: 18px;
+        }
+
+        button {
+            border: none;
+            border-radius: 9px;
+            padding: 13px 22px;
+            background: #5b4bdb;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #4636c4;
+        }
+
+        .summary-box {
+            display: none;
+            background: #f7f6ff;
+            border: 1px solid #e2defe;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 22px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .summary-box h3 {
+            color: #5145cd;
+            margin-bottom: 12px;
+        }
+
+        .file-name {
+            color: #5145cd;
+            font-size: 14px;
+            margin-top: 12px;
+            overflow-wrap: anywhere;
+        }
+
+        footer {
+            text-align: center;
+            padding: 25px;
+            color: #888;
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 18px 5%;
+            }
+
+            .heading h1 {
+                font-size: 26px;
+            }
+
+            .notes-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="logo">✦ StudyMate AI</div>
+        <a href="dashboard.html">← Dashboard</a>
+    </header>
+
+    <main>
+
+        <div class="heading">
+            <h1>📚 Smart Notes</h1>
+            <p>
+                Upload your notes, organize your learning,
+                and create quick revision summaries.
+            </p>
+        </div>
+
+        <section class="notes-card">
+
+            <h2>📄 Upload Your Notes</h2>
+            <p>
+                Select a PDF, TXT, or other notes file from your device.
+            </p>
+
+            <div class="upload-box">
+                <div class="icon">☁️</div>
+                <h3>Choose your study file</h3>
+                <p>Upload notes from your laptop</p>
+
+                <input
+                    type="file"
+                    id="notesFile"
+                    accept=".pdf,.txt,.doc,.docx"
+                >
+
+                <div class="file-name" id="fileName"></div>
+            </div>
+
+            <h2>✍️ Or Paste Your Notes</h2>
+            <input type="text" id="noteTitle"
+placeholder="Enter note title"
+style="width:100%; padding:14px; margin-bottom:15px; border:1px solid #ddd; border-radius:10px;">
+            <p>
+                For this demo, paste your study material below
+                to create a quick preview summary.
+            </p>
+
+            <textarea
+                id="notesText"
+                placeholder="Paste your notes here..."
+            ></textarea>
+
+            <button onclick="generateSummary()">
+                ✨ Generate Summary
+            </button>
+            <br><br>
+<button onclick="saveNote()">💾 Save Note</button>
+
+<div id="savedNotes" style="margin-top:25px;"></div>
+
+            <div class="summary-box" id="summaryBox">
+                <h3>📝 Your Summary</h3>
+                <div id="summaryText"></div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+        © 2026 StudyMate AI | Your Personal AI Study Assistant
+    </footer>
+
+    <script>
+const API_URL = "http://127.0.0.1:5000";
+
+const fileInput = document.getElementById("notesFile");
+
+fileInput.addEventListener("change", function () {
+    document.getElementById("fileName").textContent =
+        this.files.length ? "Selected file: " + this.files[0].name : "";
+});
+
+// Generate AI Summary
+async function generateSummary() {
+    const notes = document.getElementById("notesText").value.trim();
+
+    if (!notes) {
+        alert("Please paste your notes first!");
+        return;
+    }
+
+    const summaryElement = document.getElementById("summaryText");
+    const box = document.getElementById("summaryBox");
+
+    summaryElement.textContent = "✨ AI is generating your summary...";
+    box.style.display = "block";
+
+    try {
+        const response = await fetch(API_URL + "/api/ai/summarize", {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ text: notes })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || "Summary generation failed");
+        }
+
+        summaryElement.textContent = result.summary;
+        box.scrollIntoView({ behavior: "smooth" });
+
+    } catch (error) {
+        summaryElement.textContent = "";
+        alert(error.message || "AI summary failed. Please try again.");
+    }
+}
+
+// Load saved notes
+async function loadNotes() {
+    try {
+        const response = await fetch(API_URL + "/api/notes", {
+            credentials: "include"
+        });
+
+        if (!response.ok) throw new Error("Please login first");
+
+        const notes = await response.json();
+        const container = document.getElementById("savedNotes");
+        container.innerHTML = "<h2>📚 Saved Notes</h2>";
+
+        notes.forEach(note => {
+            const card = document.createElement("div");
+            card.style.cssText =
+                "background:#f7f6ff;padding:15px;margin-top:12px;border-radius:10px;";
+
+            const title = document.createElement("h3");
+            title.textContent = note.title;
+
+            const content = document.createElement("p");
+            content.textContent = note.content;
+
+            const edit = document.createElement("button");
+            edit.textContent = "Edit";
+            edit.style.marginRight = "8px";
+            edit.onclick = () => editNote(note);
+
+            const del = document.createElement("button");
+            del.textContent = "Delete";
+            del.style.background = "#dc3545";
+            del.onclick = () => deleteNote(note.id);
+
+            card.append(title, content, edit, del);
+            container.appendChild(card);
+        });
+
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+// Save note
+async function saveNote() {
+    const title = document.getElementById("noteTitle").value.trim();
+    const content = document.getElementById("notesText").value.trim();
+
+    if (!title || !content) {
+        alert("Please enter note title and content!");
+        return;
+    }
+
+    try {
+        const response = await fetch(API_URL + "/api/notes", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title, content })
+        });
+
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error);
+
+        alert("Note saved successfully!");
+        document.getElementById("noteTitle").value = "";
+        document.getElementById("notesText").value = "";
+        loadNotes();
+
+    } catch (error) {
+        alert(error.message || "Could not save note");
+    }
+}
+
+// Edit note
+async function editNote(note) {
+    const title = prompt("Edit note title:", note.title);
+    if (title === null) return;
+
+    const content = prompt("Edit note content:", note.content);
+    if (content === null) return;
+
+    if (!title.trim() || !content.trim()) {
+        alert("Title and content cannot be empty!");
+        return;
+    }
+
+    try {
+        const response = await fetch(API_URL + "/api/notes/" + note.id, {
+            method: "PUT",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title, content })
+        });
+
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error);
+
+        alert("Note updated!");
+        loadNotes();
+
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+// Delete note
+async function deleteNote(id) {
+    if (!confirm("Are you sure you want to delete this note?")) return;
+
+    try {
+        const response = await fetch(API_URL + "/api/notes/" + id, {
+            method: "DELETE",
+            credentials: "include"
+        });
+
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error);
+
+        alert("Note deleted!");
+        loadNotes();
+
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+loadNotes();
+</script>
+
+</body>
+</html>

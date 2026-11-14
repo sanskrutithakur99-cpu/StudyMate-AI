@@ -1,0 +1,5 @@
+.env
+studymate.db
+__pycache__/
+*.pyc
+venv/

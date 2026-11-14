@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | StudyMate AI</title>
+
+    <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+body {
+    background: #f4f1fc;
+    color: #292344;
+}
+
+.dashboard {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* PREMIUM SIDEBAR */
+.sidebar {
+    width: 250px;
+    background: linear-gradient(180deg, #302052, #211638);
+    padding: 30px 20px;
+    flex-shrink: 0;
+    color: white;
+    box-shadow: 5px 0 25px rgba(35, 20, 65, 0.12);
+}
+
+.logo {
+    font-size: 23px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 45px;
+    letter-spacing: -0.5px;
+}
+
+.logo span {
+    color: #c4a8ff;
+}
+
+.nav-title {
+    color: #a99bc4;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    margin: 25px 0 13px;
+}
+
+.nav-link {
+    display: block;
+    padding: 13px 14px;
+    margin-bottom: 8px;
+    border-radius: 11px;
+    text-decoration: none;
+    color: #d1c8e3;
+    font-size: 14px;
+    transition: 0.25s ease;
+}
+
+.nav-link.active,
+.nav-link:hover {
+    background: linear-gradient(100deg, #8054d6, #6841b5);
+    color: white;
+    transform: translateX(3px);
+}
+
+.sidebar-bottom {
+    margin-top: 45px;
+}
+
+/* MAIN CONTENT */
+.main {
+    flex: 1;
+    min-width: 0;
+    padding: 35px;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 35px;
+}
+
+.topbar h1 {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: #302052;
+    margin-bottom: 8px;
+}
+
+.topbar p {
+    color: #88819d;
+    font-size: 14px;
+}
+
+.profile {
+    background: white;
+    color: #6841b5;
+    padding: 12px 18px;
+    border-radius: 30px;
+    font-weight: 700;
+    border: 1px solid #e6def8;
+    box-shadow: 0 4px 12px rgba(50, 30, 90, 0.06);
+}
+
+/* WELCOME BANNER */
+.welcome {
+    background: linear-gradient(115deg, #493078, #8054d6, #a68ae8);
+    color: white;
+    padding: 38px;
+    border-radius: 22px;
+    margin-bottom: 32px;
+    box-shadow: 0 12px 28px rgba(104, 65, 181, 0.2);
+}
+
+.welcome h2 {
+    font-size: 29px;
+    margin-bottom: 12px;
+}
+
+.welcome p {
+    font-size: 14px;
+    line-height: 1.8;
+    opacity: 0.93;
+    max-width: 520px;
+}
+
+.welcome button {
+    margin-top: 22px;
+    padding: 13px 22px;
+    background: white;
+    color: #6841b5;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.welcome button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 15px #21163840;
+}
+
+/* STATS */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 38px;
+}
+
+.stat-card {
+    background: white;
+    border: 1px solid #ebe5f7;
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: 0 5px 18px rgba(50, 30, 90, 0.045);
+    transition: 0.3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 22px rgba(50, 30, 90, 0.09);
+}
+
+.stat-card p {
+    color: #89829d;
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+
+.stat-card h3 {
+    font-size: 29px;
+    color: #6841b5;
+}
+
+/* STUDY TOOLS */
+.section-title {
+    font-size: 22px;
+    font-weight: 750;
+    color: #302052;
+    margin-bottom: 20px;
+}
+
+.tools-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.tool-card {
+    background: white;
+    padding: 26px;
+    border: 1px solid #ebe5f7;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 18px rgba(50, 30, 90, 0.05);
+    cursor: pointer;
+}
+
+.tool-card:hover {
+    transform: translateY(-7px);
+    box-shadow: 0 15px 30px rgba(104, 65, 181, 0.14);
+    border-color: #c8b4f1;
+}
+
+.tool-icon {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0eaff;
+    border-radius: 15px;
+    font-size: 24px;
+    margin-bottom: 19px;
+}
+
+.tool-card h3 {
+    font-size: 17px;
+    color: #302052;
+    margin-bottom: 10px;
+}
+
+.tool-card p {
+    color: #89829d;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.tool-card button {
+    margin-top: 19px;
+    background: #f0eaff;
+    border: none;
+    color: #6841b5;
+    font-weight: bold;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.tool-card button:hover {
+    background: #6841b5;
+    color: white;
+}
+
+.coming {
+    font-size: 10px;
+    background: #f0eaff;
+    color: #6841b5;
+    padding: 5px 9px;
+    border-radius: 20px;
+    margin-top: 12px;
+    display: inline-block;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1000px) {
+    .tools-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 700px) {
+    .sidebar {
+        display: none;
+    }
+
+    .main {
+        padding: 20px;
+    }
+
+    .tools-grid,
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .welcome {
+        padding: 25px;
+    }
+
+    .welcome h2 {
+        font-size: 23px;
+    }
+
+    .topbar h1 {
+        font-size: 25px;
+    }
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="logo">✦ StudyMate <span>AI</span></div>
+
+        <p class="nav-title">MENU</p>
+
+        <a href="dashboard.html" class="nav-link active">
+            ▦ Dashboard
+        </a>
+
+        <a href="#tools" class="nav-link">
+            ✦ AI Study Tools
+        </a>
+
+        <a href="#progress" class="nav-link">
+            ▤ My Progress
+        </a>
+
+        <p class="nav-title">STUDY</p>
+
+        <a href="#tools" class="nav-link">🤖 AI Chat</a>
+        <a href="smart-notes.html" class="nav-link">📄 Smart Notes</a>
+        <a href="#tools" class="nav-link">🧠 AI Quiz</a>
+        <a href="#tools" class="nav-link">📅 Study Planner</a>
+
+        <div class="sidebar-bottom">
+            <a href="index.html" class="nav-link">
+                ← Back to Home
+            </a>
+
+            <a href="login.html" class="nav-link">
+                ↪ Logout
+            </a>
+        </div>
+
+    </aside>
+
+    <!-- MAIN DASHBOARD -->
+    <main class="main">
+
+        <div class="topbar">
+            <div>
+                <h1>Dashboard</h1>
+                <p>Welcome back! Ready to learn something new?</p>
+            </div>
+
+            <div class="profile">👩‍🎓 Student</div>
+        </div>
+
+        <!-- WELCOME -->
+        <section class="welcome">
+            <h2>Hey, Student! 👋</h2>
+
+            <p>
+                Your personal AI study space is ready.
+                Learn smarter, stay organized, and make
+                every study session count.
+            </p>
+
+            <button onclick="document.querySelector('#tools').scrollIntoView({behavior:'smooth'})">
+                Explore Study Tools →
+            </button>
+        </section>
+
+        <!-- PROGRESS -->
+        <section id="progress">
+
+            <h2 class="section-title">Your Overview</h2>
+
+            <div class="stats">
+
+                <div class="stat-card">
+                    <p>📚 Study Tools</p>
+                    <h3>6</h3>
+                </div>
+
+                <div class="stat-card">
+                    <p>⏱️ Study Time</p>
+                    <h3>0 hrs</h3>
+                </div>
+
+                <div class="stat-card">
+                    <p>🎯 Goals Completed</p>
+                    <h3>0</h3>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- TOOLS -->
+        <section id="tools">
+
+            <h2 class="section-title">
+                Your AI Study Tools ✨
+            </h2>
+
+            <div class="tools-grid">
+
+                <div class="tool-card" onclick="window.location.href='ai-chat.html'" style="cursor:pointer;">
+                    <div class="tool-icon">🤖</div>
+                    <h3>AI Chat</h3>
+                    <p>
+                        Ask questions and understand difficult
+                        topics with AI.
+                    </p>
+                    <span class="coming">OPEN NOW</span>
+                </div>
+
+                <div class="tool-card" onclick="window.location.href='smart-notes.html'" style="cursor:pointer;">
+                    <div class="tool-icon">📄</div>
+                    <h3>Smart Notes</h3>
+                    <p>
+                        Upload notes and turn long content
+                        into summaries.
+                    </p>
+                    <span class="coming">OPEN NOW</span>
+                </div>
+
+                <div class="tool-card" onclick="window.location.href='ai-quiz.html'" style="cursor:pointer;">
+                    <div class="tool-icon">🧠</div>
+                    <h3>AI Quiz</h3>
+                    <p>
+                        Practice questions and test
+                        your knowledge.
+                    </p>
+                    <span class="coming">OPEN NOW</span>
+                </div>
+
+                <div class="tool-card" onclick="window.location.href='flashcards.html'" style="cursor:pointer;">
+                    <div class="tool-icon">🗂️</div>
+                    <h3>Flashcards</h3>
+                    <p>
+                        Create quick revision cards
+                        for important concepts.
+                    </p>
+                    <span class="coming">OPEN NOW</span>
+                </div>
+
+                <div class="tool-card" onclick="window.location.href='study-planner.html'" style="cursor:pointer;">
+                    <div class="tool-icon">📅</div>
+                    <h3>Study Planner</h3>
+                    <p>
+                        Organize your subjects and build
+                        a study routine.
+                    </p>
+                    <span class="coming">OPEN NOW</span>
+                </div>
+
+                <div class="tool-card" onclick="window.location.href='progress-tracker.html'" style="cursor:pointer;">
+                    <div class="tool-icon">📊</div>
+                    <h3>Progress Tracker</h3>
+                    <p>
+                        Keep track of your learning
+                        and study goals.
+                    </p>
+                    <span class="coming">OPEN NOW</span>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+async function checkLogin() {
+    try {
+        const response = await fetch("http://127.0.0.1:5000/api/me", {
+            credentials: "include"
+        });
+
+        if (!response.ok) {
+            window.location.href = "login.html";
+        }
+    } catch (error) {
+        window.location.href = "login.html";
+    }
+}
+
+checkLogin();
+</script>
+
+</body>
+</html>

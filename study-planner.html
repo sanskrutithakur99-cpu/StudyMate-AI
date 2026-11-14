@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Study Planner | StudyMate AI</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f4f5fb;
+    padding: 30px 15px;
+    color: #252545;
+}
+
+.container {
+    max-width: 750px;
+    margin: auto;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: #5146c8;
+}
+
+.subtitle {
+    text-align: center;
+    color: #777;
+    margin-bottom: 30px;
+}
+
+.planner {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px #00000010;
+}
+
+input {
+    width: 100%;
+    padding: 13px;
+    margin-bottom: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+button {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 8px;
+    background: #6256d9;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #493db5;
+}
+
+.add-btn {
+    width: 100%;
+    margin-bottom: 25px;
+}
+
+.stats {
+    margin-bottom: 20px;
+    color: #6256d9;
+    font-weight: bold;
+}
+
+.task {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    background: #f6f5ff;
+    padding: 14px;
+    border-radius: 9px;
+    margin-bottom: 10px;
+}
+
+.task-info {
+    flex: 1;
+    overflow-wrap: anywhere;
+}
+
+.task-info small {
+    display: block;
+    color: #777;
+    margin-top: 5px;
+}
+
+.task.completed .task-info {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+.task input {
+    width: 18px;
+    margin: 0;
+}
+
+.delete-btn {
+    background: #e74c3c;
+    padding: 8px 12px;
+}
+
+#taskList {
+    margin-top: 10px;
+}
+
+.empty {
+    text-align: center;
+    color: #888;
+    padding: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>📚 Study Planner</h1>
+    <p class="subtitle">Plan your study sessions and stay productive!</p>
+
+    <div class="planner">
+        <h2>Add a Study Task</h2>
+        <br>
+
+        <input type="text" id="subject" placeholder="Enter subject or task">
+
+        <input type="date" id="studyDate">
+
+        <input type="time" id="studyTime">
+
+        <button class="add-btn" onclick="addTask()">+ Add Task</button>
+
+        <div class="stats" id="stats">Completed: 0 / 0</div>
+
+        <h2>Your Study Tasks</h2>
+        <div id="taskList">
+            <p class="empty">No tasks added yet.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+let tasks = JSON.parse(localStorage.getItem("studyTasks")) || [];
+
+function addTask() {
+    const subject = document.getElementById("subject").value.trim();
+    const date = document.getElementById("studyDate").value;
+    const time = document.getElementById("studyTime").value;
+
+    if (!subject || !date || !time) {
+        alert("Please fill all the fields!");
+        return;
+    }
+
+    tasks.push({
+        subject: subject,
+        date: date,
+        time: time,
+        completed: false
+    });
+
+    document.getElementById("subject").value = "";
+    document.getElementById("studyDate").value = "";
+    document.getElementById("studyTime").value = "";
+
+    localStorage.setItem("studyTasks", JSON.stringify(tasks));
+    displayTasks();
+}
+
+function displayTasks() {
+    const taskList = document.getElementById("taskList");
+    taskList.innerHTML = "";
+
+    if (tasks.length === 0) {
+        taskList.innerHTML = '<p class="empty">No tasks added yet.</p>';
+    }
+
+    tasks.forEach((task, index) => {
+        const div = document.createElement("div");
+        div.className = task.completed ? "task completed" : "task";
+
+        const info = document.createElement("div");
+        info.className = "task-info";
+
+        const heading = document.createElement("strong");
+        heading.textContent = task.subject;
+
+        const details = document.createElement("small");
+        details.textContent = task.date + " | " + task.time;
+
+        info.appendChild(heading);
+        info.appendChild(details);
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = task.completed;
+        checkbox.addEventListener("change", () => {
+            tasks[index].completed = checkbox.checked;
+            localStorage.setItem("studyTasks", JSON.stringify(tasks));
+            displayTasks();
+        });
+        const deleteButton = document.createElement("button");
+deleteButton.textContent = "Delete";
+
+deleteButton.addEventListener("click", () => {
+    tasks.splice(index, 1);
+    localStorage.setItem("studyTasks", JSON.stringify(tasks));
+    displayTasks();
+});
+
+        div.appendChild(checkbox);
+        div.appendChild(info);
+        div.appendChild(deleteButton);
+
+        taskList.appendChild(div);
+    });
+
+    const completed = tasks.filter(task => task.completed).length;
+    document.getElementById("stats").textContent =
+        "Completed: " + completed + " / " + tasks.length;
+}
+</script>
+
+</body>
+</html>

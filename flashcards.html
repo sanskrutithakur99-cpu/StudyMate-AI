@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flashcards | StudyMate AI</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f5f4fc;
+    color: #29263d;
+    padding: 25px;
+}
+
+.container {
+    max-width: 750px;
+    margin: 25px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 18px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+}
+
+.back {
+    color: #7966d7;
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 25px;
+}
+
+h1, .subtitle {
+    text-align: center;
+}
+
+.subtitle {
+    color: #888;
+    margin: 12px 0 30px;
+}
+
+.form {
+    background: #f8f7ff;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+label {
+    display: block;
+    margin: 12px 0 7px;
+    font-weight: bold;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    font-size: 15px;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 75px;
+}
+
+input:focus, textarea:focus {
+    border-color: #8069df;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 18px;
+    font-size: 14px;
+}
+
+.add-btn {
+    background: #8069df;
+    color: white;
+    margin-top: 15px;
+}
+
+.study {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.card {
+    background: linear-gradient(135deg, #8069df, #a18bea);
+    color: white;
+    min-height: 210px;
+    padding: 30px;
+    margin: 20px 0;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+}
+
+.card h2 {
+    margin-bottom: 15px;
+}
+
+.card p {
+    line-height: 1.6;
+}
+
+.hint {
+    font-size: 12px;
+    opacity: 0.8;
+    margin-top: 20px;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.controls button {
+    background: #eeeaff;
+    color: #705bc9;
+}
+
+.delete-btn {
+    background: #ffe8e8 !important;
+    color: #d94d4d !important;
+}
+
+.counter {
+    color: #777;
+    margin-bottom: 15px;
+}
+
+.empty {
+    color: #888;
+    padding: 25px;
+}
+
+@media(max-width: 500px) {
+    body {
+        padding: 12px;
+    }
+
+    .container {
+        padding: 20px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<a href="dashboard.html" class="back">← Back to Dashboard</a>
+
+<h1>📚 Smart Flashcards</h1>
+<p class="subtitle">Create cards, revise concepts and improve your memory!</p>
+
+<div class="form">
+
+<h3>Create a New Flashcard</h3>
+
+<label for="questionInput">Question</label>
+<input id="questionInput" type="text" placeholder="Enter your question">
+
+<label for="answerInput">Answer</label>
+<textarea id="answerInput" placeholder="Enter the answer"></textarea>
+
+<button class="add-btn" onclick="addCard()">+ Add Flashcard</button>
+
+</div>
+
+<div class="study">
+
+<h3>My Flashcards</h3>
+<p class="counter" id="counter">No cards yet</p>
+
+<div id="cardArea">
+<p class="empty">Create your first flashcard to start learning!</p>
+</div>
+
+<div class="controls">
+<button onclick="previousCard()">← Previous</button>
+<button onclick="nextCard()">Next →</button>
+<button class="delete-btn" onclick="deleteCard()">Delete</button>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+    // Load saved flashcards
+let cards = JSON.parse(localStorage.getItem("studyMateCards")) || [];
+
+function saveCards() {
+    localStorage.setItem("studyMateCards", JSON.stringify(cards));
+}
+
+let currentIndex = 0;
+let showingAnswer = false;
+
+function addCard() {
+
+    const question = document.getElementById("questionInput").value.trim();
+    const answer = document.getElementById("answerInput").value.trim();
+
+    if (!question || !answer) {
+        alert("Please enter both question and answer!");
+        return;
+    }
+
+    cards.push({ question, answer });
+    saveCards();
+    console.log(localStorage.getItem("studyMateCards"));
+
+    document.getElementById("questionInput").value = "";
+    document.getElementById("answerInput").value = "";
+
+    currentIndex = cards.length - 1;
+    showingAnswer = false;
+
+    displayCard();
+}
+
+function displayCard() {
+
+    const area = document.getElementById("cardArea");
+    const counter = document.getElementById("counter");
+
+    if (cards.length === 0) {
+        area.innerHTML = '<p class="empty">No flashcards available. Create one above!</p>';
+        counter.textContent = "No cards yet";
+        return;
+    }
+
+    const card = cards[currentIndex];
+
+    counter.textContent = `Card ${currentIndex + 1} of ${cards.length}`;
+
+    area.innerHTML = `
+        <div class="card" onclick="flipCard()">
+            <h2>${showingAnswer ? "Answer" : "Question"}</h2>
+            <p>${escapeHTML(showingAnswer ? card.answer : card.question)}</p>
+            <span class="hint">Click the card to flip</span>
+        </div>
+    `;
+}
+
+function escapeHTML(text) {
+    return text.replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[char]);
+}
+
+function flipCard() {
+    if (cards.length === 0) return;
+
+    showingAnswer = !showingAnswer;
+    displayCard();
+}
+
+function nextCard() {
+    if (cards.length === 0) return;
+
+    currentIndex = (currentIndex + 1) % cards.length;
+    showingAnswer = false;
+    displayCard();
+}
+
+function previousCard() {
+    if (cards.length === 0) return;
+
+    currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+    showingAnswer = false;
+    displayCard();
+}
+
+function deleteCard() {
+    if (cards.length === 0) return;
+
+    cards.splice(currentIndex, 1);
+    saveCards();
+
+    if (currentIndex >= cards.length) {
+        currentIndex = Math.max(0, cards.length - 1);
+    }
+
+    showingAnswer = false;
+    displayCard();
+}
+
+displayCard();
+
+</script>
+
+</body>
+</html>
